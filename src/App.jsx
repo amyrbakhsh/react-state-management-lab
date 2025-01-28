@@ -1,5 +1,6 @@
 // src/App.jsx
 import { useState } from "react";
+import './App.css';
 
 
 
@@ -93,13 +94,75 @@ const initialState = [
   const [team, setTeam] = useState([])
   const [money, setMoney] = useState(100)
   const [zombieFighters, setZombieFighters] = useState(initialState)
-
   
+  let totalStrength = 0
+  team.forEach(fighter => {
+    totalStrength += fighter.strength
+  })
+
+  let totalAgility = 0
+  team.forEach(fighter => {
+    totalAgility += fighter.agility
+  })
+
+
+  function handleAddFighter (fighter) {
+
+    if (money < fighter.price){
+      console.log('Not enough money')
+      return
+    }
+    //make a copy
+    //modify the copy if required
+    const newTeam = [...team, fighter]
+
+    //update the state
+    setTeam (newTeam)
+
+    
+    const newZombieFighters = zombieFighters.filter(zombieFighter => (
+      zombieFighter.id !== fighter.id
+    ))
+
+    setZombieFighters(newZombieFighters)
+
+    const newMoney = money - fighter.price
+    setMoney (newMoney)
+
+  }
+
+
+  function handleRemoveFighter(fighter) {
+    const newTeam = team.filter(teamMember => teamMember.id !== fighter.id)
+    setTeam(newTeam)
+    
+    const newZombieFighters = [...zombieFighters, fighter]
+    setZombieFighters(newZombieFighters)
+
+    const newMoney = money + fighter.price
+    setMoney(newMoney)
+  }
 
   return (
     <>
-      <h1>Hello world!</h1>
+      <h1>Zombie Fighters</h1>
       <h3>Money: {money}</h3>
+      <h3>Team Strenght: {totalStrength}</h3>
+      <h3>Agility: {totalAgility}</h3>
+      <h3>My Team</h3>
+      <ul>
+        {team.map(fighter => (
+          <li>
+            <img src={fighter.img} alt={fighter.name} /> 
+            <h3>{fighter.name}</h3>
+            <p>price: {fighter.price}</p>
+            <p>strength: {fighter.strength}</p>
+            <p>agility: {fighter.agility}</p>
+            <button onClick={() => handleRemoveFighter (fighter)} >Remove</button>
+          </li>
+        ))}
+      </ul>
+      <h2>Fighters</h2>
       <ul>
         {zombieFighters.map(fighter => (
           <li>
@@ -108,8 +171,8 @@ const initialState = [
             <p>price: {fighter.price}</p>
             <p>strength: {fighter.strength}</p>
             <p>agility: {fighter.agility}</p>
-            <butto>Add</butto>
-            </li>
+            <button onClick={() => handleAddFighter (fighter)} >Add</button>
+          </li>
         ))}
       </ul>
     </>
